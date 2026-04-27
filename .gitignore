@@ -1,0 +1,43 @@
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# =========================
+# C / Makefile
+# =========================
+# build output
+c/build/
+c/app
+c/*.o
+c/**/*.o
+
+# =========================
+# Java
+# =========================
+# compiled classes
+java/out/
+java/**/*.class
+
+# =========================
+# Rust
+# =========================
+rust/target/
+rust/Cargo.lock
+
+# =========================
+# Logs / temp
+# =========================
+*.log
+*.tmp
+*.swp
+
+# =========================
+# Test / runtime files
+# =========================
+input/
+output/
+expected/
