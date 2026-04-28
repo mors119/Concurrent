@@ -6,6 +6,12 @@ public class Main {
             System.out.println("사용법: make run ARGS=\"<category> <number>\"");
             return;
         }
-        Matcher.run(args);
+        try {
+            Matcher.run(args);
+        } catch (InterruptedException e) {
+            System.out.println("인터럽트 발생!");
+        } catch (Exception e) {
+            System.out.println("예외 발생!");
+        }
     }
 }

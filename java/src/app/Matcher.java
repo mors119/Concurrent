@@ -1,13 +1,21 @@
 package app;
 
 public class Matcher {
-    public static void run(String[] args) {
+    public static void run(String[] args) throws InterruptedException, Exception {
         String category = args[0];
         String number = args[1];
 
         if (category.equals("common")) {
             if (number.equals("1")) {
-                app.common.Ch01Test.run(); // 폴더 경로로 접근
+                app.common.BasicThread.run();
+                return;
+            }
+            if (number.equals("2")) {
+                app.common.CallableFutureThread.run();
+                return;
+            }
+            if (number.equals("3")) {
+                app.common.ExecutorServiceThread.run();
                 return;
             }
             System.out.println("common 카테고리의 해당 번호가 없습니다.");
