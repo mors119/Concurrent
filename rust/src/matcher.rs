@@ -3,7 +3,7 @@ use crate::common;
 pub fn run(args: &[String]) {
     match args[1].as_str() {
         "common" => match args[2].as_str() {
-            "1" => common::ch01_test::run(),
+            "1" => common::thread::run(),
             _ => {
                 println!("common 카테고리의 해당 번호가 없습니다.");
             }
