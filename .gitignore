@@ -5,6 +5,7 @@
 Thumbs.db
 .vscode/
 .idea/
+*concurrent_programming/
 
 # =========================
 # C / Makefile

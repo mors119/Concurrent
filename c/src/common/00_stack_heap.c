@@ -18,9 +18,9 @@ void* thread_stack_func(void* arg) {
         (*t->heap_ptr)++;
 
         printf("[Thread %d] stack=%d, heap=%d\n",
-              t->thread_id,
-              stack_val,
-              *t->heap_ptr);
+            t->thread_id,
+            stack_val,
+            *t->heap_ptr);
 
         sleep(1);
     }
