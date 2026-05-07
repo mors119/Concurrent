@@ -6,4 +6,5 @@ pub mod ch04_rwlock;
 pub mod ch05_barrier;
 pub mod ch06_semaphore;
 pub mod ch07_channel;
+pub mod ch08_bakery;
 pub mod semaphore;
