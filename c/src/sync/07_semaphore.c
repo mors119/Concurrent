@@ -2,9 +2,13 @@
 // semaphore:
 // 동시에 최대 NUM개의 스레드가 critical section에 들어갈 수 있도록 제한
 
+#include <stdio.h>
+
+#include "sync/examples.h"
+
 #define NUM 4
 
-void semaphore_acquire(volatile int *cnt) {
+static void semaphore_acquire(volatile int *cnt) {
 
     for (;;) {
 
@@ -26,8 +30,19 @@ void semaphore_acquire(volatile int *cnt) {
     }
 }
 
-void semaphore_release(int *cnt) {
+static void semaphore_release(int *cnt) {
 
     // critical section에서 나가므로 count 감소
     __sync_fetch_and_sub(cnt, 1);
+}
+
+int sync_semaphore_main(void) {
+    volatile int count = 0;
+
+    semaphore_acquire(&count);
+    printf("semaphore count after acquire = %d\n", count);
+    semaphore_release((int *)&count);
+    printf("semaphore count after release = %d\n", count);
+
+    return 0;
 }

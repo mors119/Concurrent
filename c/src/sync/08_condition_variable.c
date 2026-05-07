@@ -3,21 +3,22 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#include "sync/examples.h"
+
 // 조건 변수(condition variable): 
 // 스레드가 **특정 조건이 충족될 때까지 뮤텍스(Mutex)를 해제하고 효율적으로 대기(Wait)하다가**,
 // 다른 스레드로부터 신호(Signal/Broadcast)를 받아 작업을 재개하게 하는 동기화 도구
 // 쉽게 말하면, 조건이 만족될 때까지 스레드를 잠재운다
 
 // producer가 데이터 준비할 때까지 consumer를 sleep 상태로 기다리게 하는 예제
-pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER; // ❶ 공유 데이터 보호 (ready, buf 보호)
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;  // ❷ 조건 변수 객체 (조건이 만족되면 깨움)
+static pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER; // ❶ 공유 데이터 보호 (ready, buf 보호)
+static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;  // ❷ 조건 변수 객체 (조건이 만족되면 깨움)
 
-volatile bool ready = false; // ❸ 데이터 준비 여부 (아직 producer가 데이터 안 만듦)
-char buf[256]; // 스레드 사이에서 데이터를 주고 받기 위한 버퍼
+static volatile bool ready = false; // ❸ 데이터 준비 여부 (아직 producer가 데이터 안 만듦)
+static char buf[256] = "condition variable example"; // 스레드 사이에서 데이터를 주고 받기 위한 버퍼
 
-void* producer(void *arg) { // 데이터 생성 스레드 ❹
-    printf("producer: ");
-    fgets(buf, sizeof(buf), stdin); // 사용자 입력을 buf에 저장.
+static void* producer(void *arg) { // 데이터 생성 스레드 ❹
+    (void)arg;
 
     pthread_mutex_lock(&mut); // 공유 데이터 수정 시작.
     ready = true; // ❺ 데이터 준비 완료
@@ -32,7 +33,8 @@ void* producer(void *arg) { // 데이터 생성 스레드 ❹
     return NULL;
 }
 
-void* consumer(void *arg) { // 데이터 소비 스레드 ❼
+static void* consumer(void *arg) { // 데이터 소비 스레드 ❼
+    (void)arg;
     pthread_mutex_lock(&mut); // 공유 데이터 접근 시작.
 
     while (!ready) { // ready 변수값이 false인 경우 대기
@@ -51,7 +53,7 @@ void* consumer(void *arg) { // 데이터 소비 스레드 ❼
     return NULL;
 }
 
-int main(int argc, char *argv[]) {
+int sync_condition_variable_main(void) {
     // 스레드 생성
     pthread_t pr, cn;
     pthread_create(&pr, NULL, producer, NULL);

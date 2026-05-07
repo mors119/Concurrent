@@ -1,41 +1,20 @@
-#include <stdbool.h>
 #include <stdatomic.h>
+#include <stdbool.h>
 #include <pthread.h>
 #include <stdio.h>
 
-bool lock = false;
+#include "sync/examples.h"
 
-// TTAS 스핀락: Test-Test-And-Set. 먼저 읽기로 확인하고, 그다음 원자적 set을 시도하는 스핀락 방식
-void spinlock_acquire(volatile bool *lock) { // ❶
-    for (;;) { // 무한루프
-        while(*lock); // ❷ 무한루프 (1. lock이 true인 동안 읽기만 하면서 대기)
-        if (!test_and_set(lock)) // 2. 풀린 것 같으면 원자적으로 획득 시도
-            break;              // 3. 성공하면 탈출
-    }
-}
-
-void spinlock_release(bool *lock) {
-    tas_release(lock);
-}
-
-void some_func() {
-    for (;;) {
-        spinlock_acquire(&lock); // 록 획득 ❶
-        // 크리티컬 섹션 ❷
-        spinlock_release(&lock); // 록 반환 ❸
-    }
-}
-
-// 보다 현대적인 버전
+// 보다 현대적인 TTAS spin lock 예시
 typedef struct {
     atomic_bool locked;
 } spinlock_t;
 
-void spinlock_init(spinlock_t *lock) {
+static void spinlock_init(spinlock_t *lock) {
     atomic_init(&lock->locked, false);
 }
 
-void spinlock_acquire(spinlock_t *lock) {
+static void spinlock_acquire(spinlock_t *lock) {
     for (;;) {
         while (atomic_load_explicit(&lock->locked, memory_order_relaxed)) {
             // busy wait
@@ -51,7 +30,7 @@ void spinlock_acquire(spinlock_t *lock) {
     }
 }
 
-void spinlock_release(spinlock_t *lock) {
+static void spinlock_release(spinlock_t *lock) {
     atomic_store_explicit(
         &lock->locked,
         false,
@@ -59,17 +38,25 @@ void spinlock_release(spinlock_t *lock) {
     );
 }
 
-// 실제 프로그램에서는 아래 사용
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static int counter = 0;
 
-int counter = 0;
-
-void some_func_2() {
-
+static void some_func_2(void) {
     pthread_mutex_lock(&mutex);
-
-    // critical section
     counter++;
-
     pthread_mutex_unlock(&mutex);
+}
+
+int sync_spinlock_main(void) {
+    spinlock_t lock;
+
+    spinlock_init(&lock);
+    spinlock_acquire(&lock);
+    printf("spinlock critical section\n");
+    spinlock_release(&lock);
+
+    some_func_2();
+    printf("pthread mutex counter = %d\n", counter);
+
+    return 0;
 }

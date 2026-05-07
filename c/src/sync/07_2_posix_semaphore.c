@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "sync/examples.h"
+
 #define NUM 4
 #define NUM_THREADS 10
 #define NUM_LOOP 10000
@@ -10,9 +12,19 @@
 // 실제 활용
 
 // POSIX 세마포어 객체
-sem_t sem;
+#if defined(__APPLE__)
 
-void *th(void *arg) {
+int sync_posix_semaphore_main(void) {
+    printf("sem_init-based POSIX unnamed semaphore is not available on macOS\n");
+    return 0;
+}
+
+#else
+
+static sem_t sem;
+
+static void *th(void *arg) {
+    (void)arg;
     for (int i = 0; i < NUM_LOOP; i++) {
         // 세마포어 획득
         // 내부 카운트가 0보다 크면 1 감소하고 통과
@@ -30,7 +42,7 @@ void *th(void *arg) {
     return NULL;
 }
 
-int main(void) {
+int sync_posix_semaphore_main(void) {
     pthread_t threads[NUM_THREADS];
 
     // 세마포어 초기화
@@ -63,3 +75,5 @@ int main(void) {
     printf("OK!\n");
     return EXIT_SUCCESS;
 }
+
+#endif

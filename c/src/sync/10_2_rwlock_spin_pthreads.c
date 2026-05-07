@@ -2,13 +2,16 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#include "sync/examples.h"
+
 // Read가 대부분인 경우에는 Mutex보다 빠르다.
 
-pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER; // ❶ 공용 변수 초기화 (pthread_rwlock_init 함수로도 가능)
+static pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER; // ❶ 공용 변수 초기화 (pthread_rwlock_init 함수로도 가능)
 
-int shared_data = 0; // 공유 데이터
+static int shared_data = 0; // 공유 데이터
 
-void* reader(void *arg) { // Reader용 함수 ❷
+static void* reader(void *arg) { // Reader용 함수 ❷
+    (void)arg;
     if (pthread_rwlock_rdlock(&rwlock) != 0) {
         perror("pthread_rwlock_rdlock"); exit(-1);
     }
@@ -26,7 +29,8 @@ void* reader(void *arg) { // Reader용 함수 ❷
     return NULL;
 }
 
-void* writer(void *arg) { // Writer용 함수 ❸
+static void* writer(void *arg) { // Writer용 함수 ❸
+    (void)arg;
     // write lock 획득
     // 단독 접근
     if (pthread_rwlock_wrlock(&rwlock) != 0) {
@@ -47,7 +51,7 @@ void* writer(void *arg) { // Writer용 함수 ❸
     return NULL;
 }
 
-int main(int argc, char *argv[]) {
+int sync_rwlock_spin_pthreads_main(void) {
     // 스레드 생성
     pthread_t rd, wr;
     pthread_create(&rd, NULL, reader, NULL);

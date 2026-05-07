@@ -1,11 +1,14 @@
 #include <pthread.h>
 #include <stdio.h>
 
-int counter = 0;
+#include "sync/examples.h"
+
+static int counter = 0;
 
 // race condition: 
 // 프로세스가 동시에 공유 자원에 접근함에 따라 나타나는 예상치 못한 이상이나 상태
-void* worker(void* arg) {
+static void* worker(void* arg) {
+    (void)arg;
 
     for (int i = 0; i < 1000000; i++) {
         counter++;
@@ -14,7 +17,7 @@ void* worker(void* arg) {
     return NULL;
 }
 
-int main() {
+int sync_race_condition_main(void) {
 
     pthread_t t1;
     pthread_t t2;

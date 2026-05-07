@@ -1,10 +1,15 @@
 #include <pthread.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "common/detached_thread.h"
+
 // 스레드용 함수
-void *thread_func(void *arg) {
+static void *thread_func(void *arg) {
+    (void)arg;
+
     for (int i = 0; i < 5; i++) {
         printf("i = %d\n", i);
         sleep(1);
@@ -13,9 +18,9 @@ void *thread_func(void *arg) {
 }
 
 // attr을 이용하지 않고 pthread_detach를 이용해서 detach 스레드 만들기
-void *thread_func_2(void *arg) { 
+static void *thread_func_2(void *arg) {
     pthread_detach(pthread_self()); // 이런식으로 디태치 스레드화 할 수 있다.
-    int id = (int)arg;
+    int id = (int)(intptr_t)arg;
     
     for (int i = 0; i < 5; i++) { 
         printf("id = %d, i = %d\n", id, i);
@@ -27,7 +32,10 @@ void *thread_func_2(void *arg) {
 
 
 
-int main(int argc, char *argv[]) {
+int detached_thread_main(int argc, char *argv[]) {
+    (void)argc;
+    (void)argv;
+
     // 어트리뷰트 초기화 ❶ 스레드 생성 옵션 설정용 객체
     pthread_attr_t attr;
     if (pthread_attr_init(&attr) != 0) {
@@ -53,6 +61,12 @@ int main(int argc, char *argv[]) {
     // 어트리뷰트 파기 (스레드에 영향 없음.): 설정 객체 메모리 해제
     if (pthread_attr_destroy(&attr) != 0) {
         perror("pthread_attr_destroy");
+        return -1;
+    }
+
+    pthread_t th2;
+    if (pthread_create(&th2, NULL, thread_func_2, (void *)(intptr_t)2) != 0) {
+        perror("pthread_create");
         return -1;
     }
 

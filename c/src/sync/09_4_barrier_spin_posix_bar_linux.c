@@ -1,15 +1,27 @@
 #include <pthread.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
+
+#include "sync/examples.h"
 
 // 배리어 동기화: 모든 스레드가 특정 지점까지 올 때까지 전부 기다린다
 // 모든 스레드가 barrier 도달할 때까지 대기 후, 그 다음 작업 시작
 // 예를 들어, 2단계 작업은 모든 스레드가 1단계를 끝내야 시작 가능
 #define NUM_THREADS 4
 
-pthread_barrier_t barrier;
+#if defined(__APPLE__)
 
-void *worker(void *arg) {
+int sync_barrier_spin_posix_bar_linux_main(void) {
+    printf("pthread_barrier_* is not available on macOS\n");
+    return 0;
+}
+
+#else
+
+static pthread_barrier_t barrier;
+
+static void *worker(void *arg) {
     int id = (int)(intptr_t)arg;
 
     printf("thread %d: before barrier\n", id);
@@ -22,7 +34,7 @@ void *worker(void *arg) {
     return NULL;
 }
 
-int main(void) {
+int sync_barrier_spin_posix_bar_linux_main(void) {
     pthread_t threads[NUM_THREADS];
 
     // NUM_THREADS개가 도착해야 barrier 통과
@@ -45,3 +57,5 @@ int main(void) {
 
     return 0;
 }
+
+#endif

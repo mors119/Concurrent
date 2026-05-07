@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <sched.h>
 
+#include "sync/examples.h"
+
 #define NUM 4
 #define NUM_THREADS 10
 #define NUM_LOOP 10000
@@ -17,11 +19,11 @@ typedef struct {
 
 // 전역 세마포어 객체
 // count = 0 → 현재 들어간 스레드가 없음
-semaphore_t sema = {
+static semaphore_t sema = {
     .count = 0
 };
 
-void semaphore_acquire(semaphore_t *sema) {
+static void semaphore_acquire(semaphore_t *sema) {
     for (;;) {
         // 현재 count 값을 읽음
         // relaxed는 단순히 값 확인용으로 가볍게 읽는 메모리 순서
@@ -56,7 +58,7 @@ void semaphore_acquire(semaphore_t *sema) {
     }
 }
 
-void semaphore_release(semaphore_t *sema) {
+static void semaphore_release(semaphore_t *sema) {
     // critical section에서 나가므로 count를 1 감소
     atomic_fetch_sub_explicit(
         &sema->count,
@@ -65,7 +67,8 @@ void semaphore_release(semaphore_t *sema) {
     );
 }
 
-void *th(void *arg) {
+static void *th(void *arg) {
+    (void)arg;
     for (int i = 0; i < NUM_LOOP; i++) {
         // 세마포어 획득
         semaphore_acquire(&sema);
@@ -91,7 +94,7 @@ void *th(void *arg) {
     return NULL;
 }
 
-int main(void) {
+int sync_atomic_semaphore_main(void) {
     pthread_t threads[NUM_THREADS];
 
     // 스레드 10개 생성

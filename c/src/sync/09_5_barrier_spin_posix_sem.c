@@ -1,16 +1,19 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
+
+#include "sync/examples.h"
 
 // POSIX semaphore API
 
 #define NUM_THREADS 10
 #define MAX_CONCURRENT 4
 
-sem_t sem;
+static sem_t sem;
 
-void *worker(void *arg) {
+static void *worker(void *arg) {
     int id = (int)(intptr_t)arg;
 
     // 세마포어 획득
@@ -29,7 +32,7 @@ void *worker(void *arg) {
     return NULL;
 }
 
-int main(void) {
+int sync_barrier_spin_posix_sem_main(void) {
     pthread_t threads[NUM_THREADS];
 
     // 초기 카운트 4

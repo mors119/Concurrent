@@ -3,13 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "sync/examples.h"
+
 // C11 표준 atomic API
 #define NUM_THREADS 4
 #define LOOP_COUNT 100000
 
-atomic_int counter = 0;
+static atomic_int counter = 0;
 
-void *worker(void *arg) {
+static void *worker(void *arg) {
+    (void)arg;
     for (int i = 0; i < LOOP_COUNT; i++) {
         // C11 표준 atomic 증가
         atomic_fetch_add_explicit(
@@ -22,7 +25,7 @@ void *worker(void *arg) {
     return NULL;
 }
 
-int main(void) {
+int sync_barrier_spin_c11_main(void) {
     pthread_t threads[NUM_THREADS];
 
     for (int i = 0; i < NUM_THREADS; i++) {

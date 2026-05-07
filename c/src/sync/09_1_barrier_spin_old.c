@@ -2,13 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "sync/examples.h"
+
 // 구버전 gcc/clang 등 컴파일러
 #define NUM_THREADS 4
 #define LOOP_COUNT 100000
 
-int counter = 0;
+static int counter = 0;
 
-void *worker(void *arg) {
+static void *worker(void *arg) {
+    (void)arg;
     for (int i = 0; i < LOOP_COUNT; i++) {
         // counter 값을 원자적으로 1 증가
         __sync_fetch_and_add(&counter, 1);
@@ -17,7 +20,7 @@ void *worker(void *arg) {
     return NULL;
 }
 
-int main(void) {
+int sync_barrier_spin_old_main(void) {
     pthread_t threads[NUM_THREADS];
 
     for (int i = 0; i < NUM_THREADS; i++) {

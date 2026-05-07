@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER; // ❶ 전역 mutex 객체 생성
+#include "sync/examples.h"
 
-void* some_func(void *arg) { // 스레드용 함수
+static pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER; // ❶ 전역 mutex 객체 생성
+
+static void* some_func(void *arg) { // 스레드용 함수
+    (void)arg;
     if (pthread_mutex_lock(&mut) != 0) { // ❷ mutex 잠그기 (이미 mutex를 잡고 있으면, 현재 스레드는 여기서 대기)
         perror("pthread_mutex_lock"); exit(-1);
     }
@@ -18,7 +21,7 @@ void* some_func(void *arg) { // 스레드용 함수
     return NULL;
 }
 
-int main(int argc, char *argv[]) {
+int sync_pthreads_mutex_main(void) {
     // 스레드 생성
     pthread_t th1, th2;
     if (
