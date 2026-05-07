@@ -1,9 +1,16 @@
-use crate::common;
+use crate::ch_sync;
 
 pub fn run(args: &[String]) {
     match args[1].as_str() {
-        "common" => match args[2].as_str() {
-            "1" => common::thread::run(),
+        "sync" => match args[2].as_str() {
+            "1" => ch_sync::ch01_thread::run(),
+            "2" => ch_sync::ch02_mutex::run(),
+            "3-1" => ch_sync::ch03_1_condvar_wait::run(),
+            "3-2" => ch_sync::ch03_2_condvar_wait_while::run(),
+            "4" => ch_sync::ch04_rwlock::run(),
+            "5" => ch_sync::ch05_barrier::run(),
+            "6" => ch_sync::ch06_semaphore::run(),
+            "7" => ch_sync::ch07_channel::run(),
             _ => {
                 println!("common 카테고리의 해당 번호가 없습니다.");
             }
