@@ -12,7 +12,7 @@ pub fn run(args: &[String]) {
             "6" => ch_sync::ch06_semaphore::run(),
             "7" => ch_sync::ch07_channel::run(),
             "8" => ch_sync::ch08_bakery::run(),
-
+            "9" => ch_sync::ch09_rwlock::run(),
             _ => {
                 println!("common 카테고리의 해당 번호가 없습니다.");
             }
