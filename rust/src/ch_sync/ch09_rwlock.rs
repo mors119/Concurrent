@@ -3,7 +3,7 @@
 use std::sync::{Arc, RwLock};
 use std::thread;
 
-fn run() {
+pub fn run() {
     // ch04_rwlock::test1()과 다른 점은 Arc로 RwLock을 감싸서 여러 스레드에서 공유할 수 있다는 것이다.
     let val = Arc::new(RwLock::new(true));
 

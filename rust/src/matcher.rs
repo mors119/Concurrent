@@ -3,6 +3,7 @@ use crate::ch_sync;
 pub fn run(args: &[String]) {
     match args[1].as_str() {
         "sync" => match args[2].as_str() {
+            "0" => ch_sync::deadlock_example::run(),
             "1" => ch_sync::ch01_thread::run(),
             "2" => ch_sync::ch02_mutex::run(),
             "3-1" => ch_sync::ch03_1_condvar_wait::run(),
@@ -13,6 +14,7 @@ pub fn run(args: &[String]) {
             "7" => ch_sync::ch07_channel::run(),
             "8" => ch_sync::ch08_bakery::run(),
             "9" => ch_sync::ch09_rwlock::run(),
+            "10" => ch_sync::ch10_banker::run(),
             _ => {
                 println!("common 카테고리의 해당 번호가 없습니다.");
             }
